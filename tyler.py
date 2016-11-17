@@ -16,9 +16,10 @@ class Tyler(object):
     Creates an iterable object that returns new lines.
     """
 
-    def __init__(self, filename, os_is_windows=False):
+    def __init__(self, filename):
+        is_windows = (platform.system() == "Windows")
+        self._os_is_windows = is_windows
         self._fh = None
-        self._os_is_windows = os_is_windows
 
         self.filename = filename
         self.offset = 0
@@ -136,23 +137,27 @@ class Tyler(object):
         return self._fh
 
 
-if __name__ == "__main__":
+def main():
+    '''Entry point'''
     if len(sys.argv) == 1:
         print("Usage: tyler [filename]")
         sys.exit(0)
-    FILENAME = sys.argv[1]
+    filename = sys.argv[1]
 
-    if not os.path.isfile(FILENAME):
+    if not os.path.isfile(filename):
         print("Specified file does not exists")
         sys.exit(8)
 
-    IS_WINDOWS = (platform.system() == "Windows")
-    MY_TYLER = Tyler(filename=FILENAME, os_is_windows=IS_WINDOWS)
+    my_tyler = Tyler(filename=filename)
     while True:
         try:
-            for line in MY_TYLER:
+            for line in my_tyler:
                 print(line)
             time.sleep(1)
         except KeyboardInterrupt:
             print("Quit signal received")
             sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

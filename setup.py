@@ -11,10 +11,10 @@ License: Apache 2.0
 """
 
 from setuptools import setup
-VERSION = 0.1
+VERSION = "0.2"
 
 setup(
-    name='tyler',
+    name='pytyler',
     version=VERSION,
     url='http://github.com/mastro35/tyler/',
     license='Apache-2.0',
@@ -36,8 +36,5 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.5'
     ],
-    entry_points='''
-        [console_scripts]
-        tyler=tyler
-    '''
+    entry_points={'console_scripts': ['tyler=tyler:main',]}
 )
