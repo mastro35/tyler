@@ -254,3 +254,4 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/pytyler.egg-info
