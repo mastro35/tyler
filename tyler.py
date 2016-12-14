@@ -22,7 +22,7 @@ class Tyler(object):
         self._fh = None
 
         self.filename = filename
-        self.offset = 0
+        self.oldsize = 0
         self.opened_before = False
 
     def __del__(self):
@@ -34,7 +34,7 @@ class Tyler(object):
 
     def next(self):
         """
-        Return the next line in the file, updating the offset.
+        Return the next line in the file
         """
         my_line = None
         try:
@@ -51,7 +51,6 @@ class Tyler(object):
     def _get_next_line(self):
         my_line = str(self._filehandle().readline(),
                       encoding='utf-8', errors='ignore')
-        self.offset = self._fh.tell()
         if not my_line:
             raise StopIteration
         return my_line
@@ -59,10 +58,7 @@ class Tyler(object):
     def _getsize_of_current_file(self):
         size = 0
         try:
-            old_file_position = self._fh.tell()
-            self._fh.seek(0, os.SEEK_END)
-            size = self._fh.tell()
-            self._fh.seek(old_file_position, os.SEEK_SET)
+            size = os.path.getsize(self.filename)
         except:
             pass
 
@@ -70,12 +66,15 @@ class Tyler(object):
 
     def _has_file_rolled(self):
         """Check if the file has been rolled"""
-        # if the size is smaller then offset, the file has
+        # if the size is smaller then before, the file has
         # probabilly been rolled
         if self._fh:
             size = self._getsize_of_current_file()
-            if size < self.offset:
+            if size < self.oldsize:
+                # print(str.format("rolling {0} - file shrinked from {1}B to {2}B", self.filename, self.oldsize, size))
                 return True
+
+            self.oldsize = size
 
         return False
 
@@ -85,6 +84,8 @@ class Tyler(object):
             self._fh = open(filename, "rb")
             self.filename = filename
 
+            self._fh.seek(0, os.SEEK_SET)
+            self.oldsize = 0
             return
 
         # if we're in Windows, we need to use the WIN32 API to open the
@@ -108,10 +109,12 @@ class Tyler(object):
         self._fh = open(file_descriptor, "rb")
         self.filename = filename
 
+        self._fh.seek(0, os.SEEK_SET)
+        self.oldsize = 0
+
     def _filehandle(self):
         """
-        Return a filehandle to the file being tailed, with the position set
-        to the current offset.
+        Return a filehandle to the file being tailed
         """
         # if file is opened and it has been rolled we need to close the file
         # and then to reopen it
@@ -122,7 +125,6 @@ class Tyler(object):
                 pass
 
             self._fh = None
-            self.offset = 0
 
         # if the file is closed (or has been closed right now), open it
         if not self._fh:
@@ -130,11 +132,10 @@ class Tyler(object):
 
             if not self.opened_before:
                 self.opened_before = True
-                my_start_position = self._getsize_of_current_file()
-                self._fh.seek(my_start_position)
-                self.offset = self._fh.tell()
+                self._fh.seek(0, os.SEEK_END)
 
         return self._fh
+
 
 
 def main():
