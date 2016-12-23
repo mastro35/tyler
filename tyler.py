@@ -71,7 +71,6 @@ class Tyler(object):
         if self._fh:
             size = self._getsize_of_current_file()
             if size < self.oldsize:
-                # print(str.format("rolling {0} - file shrinked from {1}B to {2}B", self.filename, self.oldsize, size))
                 return True
 
             self.oldsize = size
