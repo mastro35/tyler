@@ -137,7 +137,6 @@ class Tyler(object):
         return self._fh
 
 
-
 def main():
     '''Entry point'''
     if len(sys.argv) == 1:
